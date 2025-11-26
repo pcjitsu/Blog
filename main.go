@@ -1,24 +1,40 @@
 package main
 
 import (
-	"Blog/internal/config"
-	"fmt"
 	"log"
+	"os"
+
+	"Blog/internal/config"
 )
 
-func main() {
-	cnfg, err := config.Read()
-	if err != nil {
-		log.Fatalf("Error reading config: %v", err)
-	}
-	cnfg.SetUser("Antonios")
-	cnfg, err = config.Read()
-	if err != nil {
-		log.Fatalf("Error reading config: %v", err)
-	}
-	fmt.Println("Current User:", cnfg.CurrentUserName)
-	fmt.Println("DB URL:", cnfg.DBURL)
+type state struct {
+	cfg *config.Config
 }
 
-//go run . This runs the program
-// go build . This builds the program into an executable file
+func main() {
+	cfg, err := config.Read()
+	if err != nil {
+		log.Fatalf("error reading config: %v", err)
+	}
+
+	programState := &state{
+		cfg: &cfg,
+	}
+
+	cmds := commands{
+		registeredCommands: make(map[string]func(*state, command) error),
+	}
+	cmds.register("login", handlerLogin)
+
+	if len(os.Args) < 2 {
+		log.Fatal("Usage: cli <command> [args...]")
+	}
+
+	cmdName := os.Args[1]
+	cmdArgs := os.Args[2:]
+
+	err = cmds.run(programState, command{Name: cmdName, Args: cmdArgs})
+	if err != nil {
+		log.Fatal(err)
+	}
+}
