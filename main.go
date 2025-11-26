@@ -19,3 +19,6 @@ func main() {
 	fmt.Println("Current User:", cnfg.CurrentUserName)
 	fmt.Println("DB URL:", cnfg.DBURL)
 }
+
+//go run . This runs the program
+// go build . This builds the program into an executable file
