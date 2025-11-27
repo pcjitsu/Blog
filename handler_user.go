@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// handlerLogin processes the 'login' command to switch the current user.
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <name>", cmd.Name)
