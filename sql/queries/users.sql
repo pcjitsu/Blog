@@ -7,3 +7,6 @@ VALUES (
     $4
 )
 RETURNING *;
+
+-- name: GetUser :one
+SELECT id, name, created_at, updated_at from users WHERE name = $1;

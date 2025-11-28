@@ -1,16 +1,20 @@
 package main
 
 import (
+	"Blog/internal/config"
+	"Blog/internal/database"
+	"database/sql"
 	"log"
 	"os"
 
-	"Blog/internal/config"
+	_ "github.com/lib/pq"
 )
 
 // state represents the shared application state.
 // Right now it only holds the config, but more fields can be added later
 // (e.g., database handles, clients, caches, etc.).
 type state struct {
+	db  *database.Queries
 	cfg *config.Config
 }
 
@@ -22,9 +26,18 @@ func main() {
 		log.Fatalf("error reading config: %v", err)
 	}
 
+	db, err := sql.Open("postgres", cfg.DBURL)
+	if err != nil {
+		log.Fatalf("failed to connect to db: %v", err)
+	}
+	defer db.Close()
+
+	dbQueries := database.New(db)
+
 	// Wrap the config inside our state struct.
 	// This is passed to every command handler so they can access shared data.
 	programState := &state{
+		db:  dbQueries,
 		cfg: &cfg,
 	}
 
@@ -57,3 +70,5 @@ func main() {
 // goose postgres "postgres://antonioszikos:@localhost:5432/gator" up
 // psql gator
 // "postgres://antonioszikos:@localhost:5432/gator?sslmode=disable
+
+// Write another query to get a user by name. I used the comment -- name: GetUser :one to tell SQLC that I expect to get back a single row. Again, generate the Go code to ensure that it works.
