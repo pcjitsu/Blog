@@ -1,4 +1,5 @@
 -- +goose Up
+-- This section runs when you migrate UP (create tables).
 CREATE TABLE users (
     id UUID PRIMARY KEY,
     created_at TIMESTAMP NOT NULL,
@@ -7,4 +8,5 @@ CREATE TABLE users (
 );
 
 -- +goose Down
+-- This section runs when you migrate DOWN (rollback/delete tables).
 DROP TABLE users;
